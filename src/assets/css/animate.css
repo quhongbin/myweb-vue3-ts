@@ -1,0 +1,25 @@
+/* This file is intentionally left blank. */
+@keyframes RightToLeft {
+    from{
+        transform: translate(99%, 0);
+    }
+    to{
+        transform: translate(0%, 0);
+    }
+}
+@keyframes LeftToRight {
+    from{
+        transform: translate(-50%, 0);
+    }
+    to{
+        transform: translate(50%, 0);
+    }
+}
+@keyframes Turn90deg {
+    from{
+        transform: rotate(0deg);
+    }
+    to{
+        transform: rotate(90deg);
+    }
+}
