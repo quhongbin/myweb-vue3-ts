@@ -1,9 +1,7 @@
 <template>
-
-
   <div class="nav_container">
     <div class="nav_logo">
-      <img src="/images/qqheadImage.jpg" alt="logo" width="50px" height="50px" />
+          <img src="/images/qqheadImage.jpg" alt="logo" width="50px" height="50px" @click="goToAboutMe()"/>
     </div>
     <div class="nav_font" v-for="icon in icons" :key="icon.name">
       <div>
@@ -11,6 +9,7 @@
         <a :href="icon.url" target="_blank">{{ icon.name }}</a>
       </div>
     </div>
+      <!-- <input type="file" class="file-input" @change="handleFileUploaded" accept=".md" /> -->
     <div class="nav_menu">
       <div class="navSelections">
         <i
@@ -25,12 +24,11 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import EventBus from './eventBus';
-
-interface Icon {
-  name: string;
-  icon: string;
-  url: string;
-}
+import { type Icon} from '@/types'
+import { useRouter } from 'vue-router'
+import useDocuments from '@/hooks/useDocuments.ts'
+// const { handleFileUploaded } = useDocuments()
+const router = useRouter()
 
 const isVisibleClass = ref<boolean>(false);
 const icons: Icon[] = [
@@ -55,11 +53,23 @@ function toggleClass() {
   isVisibleClass.value = !isVisibleClass.value;
   EventBus.emit('switch-class');
 }
+function goToAboutMe() {
+  router.push('/me')
+}
 </script>
 
 <style scoped>
 @import url(../assets/css/animate.css);
+/* .file-input {
 
+      width: 70px;
+      overflow: hidden;
+    } */
+ /* 可选：自定义按钮样式（若需要更美观的按钮） */
+/* .file-input::-webkit-file-upload-button {
+  border-radius: 5px;
+  cursor: pointer;
+} */
 .nav_container {
   display: flex;
   justify-content: space-around;

@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import { ref,onMounted } from 'vue';
+import { ref,reactive,onMounted } from 'vue';
 import APlayer from "aplayer";
 import 'aplayer/dist/APlayer.min.css';
+import { type Audio } from '@/types'
 
-const audio = ref([
+const audio = reactive<Audio[]>([
   {
     name: '第三人称',
     artist: 'WF_Li第三人称ang',
@@ -29,7 +30,7 @@ function initAplayer():void {
     container: document.getElementById('aplayer'),
     fixed: true,
     cover: 'https://p1.music.126.net/5zs7IvmLv7KahY3BFzUmrg==/109951163635241613.jpg?param=300y300',
-    audio: audio.value,
+    audio: audio,
   });
 }
 
@@ -43,7 +44,7 @@ onMounted(() => {
 
 <template>
   <div class="footer">
-    <p>备案号：蜀ICP备2024111078号-1</p>
+    <p>备案号:蜀ICP备2024111078号-1</p>
     <p>版权所有 &copy; 2023-{{showYear}} quhongbin</p>
     <div id="aplayer"></div>
   </div>

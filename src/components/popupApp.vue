@@ -1,3 +1,30 @@
+<script lang="ts" setup>
+import {  ref, onMounted } from 'vue';
+import { type Icon } from '@/types'
+const icons: Icon[] = [
+      {
+          name: 'Github',
+          icon: 'fa-brands fa-github',
+          url: 'https://github.com/quhongbin',
+      },
+      {
+          name: 'Bilibili',
+          icon: 'fa-brands fa-bilibili',
+          url: 'https://space.bilibili.com/521816677',
+      },
+      {
+          name: 'Email',
+          icon: 'fa-solid fa-envelope',
+          url: 'mailto:2818777520@qq.com',
+      },
+]
+const today = new Date()
+const showYear = ref('')
+onMounted(() => {
+  showYear.value = today.getFullYear().toString();
+});
+</script>
+
 <template>
     <div class="popupMenu">
         <div v-for="(item, index) in icons" :key="index" class="popup-menu-items">
@@ -8,39 +35,10 @@
         </div>
         <span>
             <p>备案号：蜀ICP备2024111078号-1</p>
-            <p>版权所有 &copy; 2023 quhongbin</p>
+            <p>版权所有 &copy; 2023- {{ showYear }} quhongbin</p>
         </span>
     </div>
 </template>
-
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-export default defineComponent({
-    data() {
-        return {
-            icons: [
-                {
-                    name: 'Github',
-                    icon: 'fa-brands fa-github',
-                    url: 'https://github.com/quhongbin',
-                },
-                {
-                    name: 'Bilibili',
-                    icon: 'fa-brands fa-bilibili',
-                    url: 'https://space.bilibili.com/521816677',
-                },
-                {
-                    name: 'Email',
-                    icon: 'fa-solid fa-envelope',
-                    url: 'mailto:2818777520@qq.com',
-                },
-            ],
-        };
-    },
-});
-</script>
-
 <style scoped>
 .popupMenu {
     display: flex;

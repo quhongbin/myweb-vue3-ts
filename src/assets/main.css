@@ -2,6 +2,8 @@
     margin: 0;
 }
 body{
-    background-image: url(/images/heart-shape-rock-3840x2160-19910.jpg);
+    background-image: url(/images/big-sur-mountains-night-dark-macos-big-sur-stock-california-3840x2160-1493.jpg);
     background-size:cover;
+    background-repeat: no-repeat;
+    height: 110vh;
 }
