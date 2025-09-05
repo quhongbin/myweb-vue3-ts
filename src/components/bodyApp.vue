@@ -6,7 +6,6 @@
 <script lang="ts" setup>
 import { onMounted, ref, computed } from "vue";
 import { type TempText } from '@/types'
-// import markdownIt from "markdown-it";
 import popupApp from "./popupApp.vue";
 import headApp from "./headApp.vue";
 import EventBus from "./eventBus";
@@ -23,24 +22,43 @@ const tempText = ref<TempText>({
 
 // 分页相关状态
 const currentPage = ref(1);
-const itemsPerPage = ref(3); // 每页显示3个div
+const itemsPerPage = ref(3);
+const selectedTag = ref<string | null>(null);
+
+// 计算所有标签
+const allTags = computed(() => {
+  if (!documents.value) return [];
+  const tagsSet = new Set<string>();
+  documents.value.forEach(doc => {
+    if (doc.tags && Array.isArray(doc.tags)) {
+      doc.tags.forEach(tag => tagsSet.add(tag));
+    }
+  });
+  return Array.from(tagsSet);
+});
+
+// 过滤后的文档数据
+const filteredDocuments = computed(() => {
+  if (!documents.value) return [];
+  if (!selectedTag.value) return documents.value;
+  return documents.value.filter(doc =>
+    doc.tags && Array.isArray(doc.tags) && doc.tags.includes(selectedTag.value!)
+  );
+});
 
 // 计算总页数
 const totalPages = computed(() => {
-  if (!documents.value) return 0;
-  return Math.ceil(documents.value.length / itemsPerPage.value);
+  return Math.ceil(filteredDocuments.value.length / itemsPerPage.value);
 });
 
 // 获取当前页的数据
 const currentPageData = computed(() => {
-  if (!documents.value) return [];
   const startIndex = (currentPage.value - 1) * itemsPerPage.value;
   const endIndex = startIndex + itemsPerPage.value;
-  return Array.from(documents.value).slice(startIndex, endIndex);
+  return filteredDocuments.value.slice(startIndex, endIndex);
 });
 
 console.log(documents.value?.length);
-// const markdowncontent = ref<string>("test");
 
 onMounted(() => {
   EventBus.on("switch-class", toggleClass);
@@ -70,6 +88,17 @@ function goToPage(page: number) {
   }
 }
 
+// 标签选择功能
+function selectTag(tag: string) {
+  selectedTag.value = tag;
+  currentPage.value = 1; // 重置到第一页
+}
+
+// 清除标签筛选
+function clearFilter() {
+  selectedTag.value = null;
+  currentPage.value = 1;
+}
 </script>
 
 <template>
@@ -87,32 +116,70 @@ function goToPage(page: number) {
           <span>简介：</span>
           <span>{{ tempText.jianjie }}</span>
         </div>
+
       </div>
+      <!-- 标签页区域 -->
+      <div class="tags-section">
+          <h3>标签分类</h3>
+          <div class="tags-container">
+            <button
+              v-for="tag in allTags"
+              :key="tag"
+              @click="selectTag(tag)"
+              :class="['tag-button', { active: selectedTag === tag }]"
+            >
+              {{ tag }}
+            </button>
+          </div>
+          <button
+            v-if="selectedTag"
+            @click="clearFilter"
+            class="clear-filter-btn"
+          >
+            清除筛选
+          </button>
+        </div>
     </div>
 
     <div class="bg-center">
       <div class="bg-center-content">
+        <!-- 显示当前筛选状态 -->
+        <div v-if="selectedTag" class="filter-info">
+          当前筛选: <strong>{{ selectedTag }}</strong> (共 {{ filteredDocuments.length }} 篇文章)
+        </div>
+
         <!-- 显示当前页的数据 -->
         <div
           v-for="item in currentPageData"
           :key="item.id"
           @click="openDocument(item.html_path)"
+          class="document-item"
         >
           <div :href="item.html_path">{{ item.title }}</div>
+          <div class="document-tags">
+            <span
+              v-for="tag in item.tags"
+              :key="tag"
+              class="tag-badge"
+            >
+              {{ tag }}
+            </span>
+          </div>
           <button class="delDocument" @click="delDocument(item.id)">删除</button>
         </div>
 
-          <input type="file" @change="handleFileUploaded" accept=".md" />
 
 
       </div>
-      <!-- 分页控件 -->
-        <div class="pagination" v-if="totalPages ">
+        <input type="file" @change="handleFileUploaded" accept=".md" />
+        <!-- 分页控件 -->
+      <div class ="pagination" v-if="totalPages ">
           <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
           <span class="page-info">第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
           <button @click="nextPage" :disabled="currentPage === totalPages">下一页</button>
-        </div>
-    </div>
+      </div>
+
+      </div>
 
     <div class="bg-right">
       <div class="bg-right-content">
@@ -187,6 +254,120 @@ function goToPage(page: number) {
   word-wrap: break-word;
 }
 
+/* 标签页样式 */
+.tags-section {
+  width: 90%;
+  text-align: center;
+}
+
+.tags-section h3 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.tag-button {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  background-color: #f5f5f5;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.3s;
+}
+
+.tag-button:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-2px);
+}
+
+.tag-button.active {
+  background-color: #409eff;
+  color: white;
+  border-color: #409eff;
+}
+
+.clear-filter-btn {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  background-color: #ff4d4f;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.clear-filter-btn:hover {
+  background-color: #d9363e;
+}
+
+/* 筛选信息样式 */
+.filter-info {
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #e6f7ff;
+  border: 1px solid #91d5ff;
+  border-radius: 4px;
+  text-align: center;
+}
+
+/* 文档项样式 */
+.document-item {
+  height: 200px;
+  background-color: beige;
+  margin: 5px 0px 10px 10px;
+  padding: 0px 10px 0px 10px;
+  border-radius: 20px;
+  text-overflow: clip;
+  transition-duration: 1s;
+  position: relative;
+}
+
+.document-item:hover {
+  transform: scale(1.05);
+  transition: transform 0.5s;
+}
+
+.document-tags {
+  position: absolute;
+  bottom: 40px;
+  left: 10px;
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.tag-badge {
+  padding: 2px 6px;
+  background-color: #409eff;
+  color: white;
+  border-radius: 10px;
+  font-size: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .bg-center {
   display: inline-block;
   width: 65%;
@@ -200,7 +381,6 @@ function goToPage(page: number) {
   margin: 5px 0px 10px 10px;
   padding: 0px 10px 0px 10px;
   border-radius: 20px;
-  /* overflow:hidden; */
   text-overflow: clip;
   transition-duration: 1s;
 }

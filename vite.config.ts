@@ -16,5 +16,11 @@ export default defineConfig({
   },
   build:{
     assetsDir: 'assets',
+
   },
+  server:{
+    host: '127.0.0.1',
+    port: 5802
+  }
+
 })

@@ -1,5 +1,6 @@
 import { ref } from "vue";
 import axios from "axios";
+import * as yaml from 'js-yaml';
 
 export default function(){
   interface Document {
@@ -15,9 +16,25 @@ export default function(){
 async function handleFileUploaded(e: Event) {
   const target = e.target as HTMLInputElement;
   if (!target.files || target.files.length === 0) return;
+
+  const file = target.files[0];
   const formData = new FormData();
-  formData.append("file", target.files[0]);
-  formData.append("title", target.files[0].name);
+  formData.append("file", file);
+
+  // 解析 YAML 元数据
+  const { title, tags } = await parseYamlMetadata(file);
+
+  formData.append("title", title);
+
+  // 处理标签
+  if (tags.length > 0) {
+    formData.append("tags", tags.join(','));
+  } else {
+    // 如果没有 YAML 标签，使用现有标签逻辑
+    const existingTags = getExistingTags();
+    formData.append("tags", existingTags.join(','));
+  }
+
   await axios
     .post("http://localhost:3000/api/documents", formData, {
       headers: {},
@@ -26,10 +43,70 @@ async function handleFileUploaded(e: Event) {
       console.log(response.data);
       documents.value.push(response.data);
     })
-
     .catch((error) => console.log("Error:" + error));
 }
+/////////////////YAML 解析////////////////////
 
+// 解析 YAML 元数据
+async function parseYamlMetadata(file: File): Promise<{ title: string; tags: string[] }> {
+  let title = file.name;
+  let tags: string[] = [];
+
+  try {
+    const fileContent = await readFileAsText(file);
+    const yamlMatch = fileContent.match(/^---\s*\n([\s\S]*?)\n---\s*\n/);
+
+    if (yamlMatch && yamlMatch[1]) {
+      const yamlContent = yamlMatch[1];
+      const yamlMetadata = yaml.load(yamlContent) as Record<string, any>;
+
+      // 从 YAML 元数据中提取标题和标签
+      if (yamlMetadata.title) {
+        title = yamlMetadata.title;
+      }
+
+      if (yamlMetadata.tags && Array.isArray(yamlMetadata.tags)) {
+        tags = yamlMetadata.tags;
+      } else if (yamlMetadata.tags && typeof yamlMetadata.tags === 'string') {
+        tags = yamlMetadata.tags.split(',').map(tag => tag.trim());
+      }
+    }
+  } catch (error) {
+    console.warn('YAML 解析失败:', error);
+  }
+
+  return { title, tags };
+}
+
+// 获取现有标签
+function getExistingTags(): string[] {
+  const existingTags: string[] = [];
+  for (let i = 0; i < documents.value.length; i++) {
+    if (documents.value[i].tags !== null) {
+      for (let j = 0; j < documents.value[i].tags.length; j++) {
+        existingTags.push(documents.value[i].tags[j]);
+      }
+    }
+  }
+  return existingTags;
+}
+
+// 辅助函数：读取文件内容为文本
+function readFileAsText(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      resolve(e.target?.result as string);
+    };
+    reader.onerror = (e) => {
+      reject(e);
+    };
+    reader.readAsText(file);
+  });
+}
+
+
+/////////////////YAML 解析////////////////////
 function getFromServer(): void {
   axios
     .get("http://localhost:3000/api/documents", {
@@ -76,8 +153,6 @@ return {
   getFromServer,
   openDocument,
   delDocument,
+
 }
-
-
-
 }

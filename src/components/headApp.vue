@@ -35,7 +35,7 @@ const icons: Icon[] = [
   {
     name: 'Github',
     icon: 'fa-brands fa-github',
-    url: 'https://github.com/quhongbin',
+    url: 'https://github.com/quhongbin/myweb-vue3-ts',
   },
   {
     name: 'Bilibili',
