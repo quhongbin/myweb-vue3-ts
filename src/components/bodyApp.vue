@@ -70,32 +70,32 @@ function toggleClass(): void {
 }
 
 // 分页功能
-function nextPage() {
+function nextPage():void {
   if (currentPage.value < totalPages.value) {
     currentPage.value++;
   }
 }
 
-function prevPage() {
+function prevPage():void {
   if (currentPage.value > 1) {
     currentPage.value--;
   }
 }
 
-function goToPage(page: number) {
+function goToPage(page: number):void {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
   }
 }
 
 // 标签选择功能
-function selectTag(tag: string) {
+function selectTag(tag: string):void {
   selectedTag.value = tag;
   currentPage.value = 1; // 重置到第一页
 }
 
 // 清除标签筛选
-function clearFilter() {
+function clearFilter():void {
   selectedTag.value = null;
   currentPage.value = 1;
 }

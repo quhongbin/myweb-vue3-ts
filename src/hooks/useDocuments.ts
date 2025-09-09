@@ -58,7 +58,7 @@ async function parseYamlMetadata(file: File): Promise<{ title: string; tags: str
 
     if (yamlMatch && yamlMatch[1]) {
       const yamlContent = yamlMatch[1];
-      const yamlMetadata = yaml.load(yamlContent) as Record<string, any>;
+      const yamlMetadata = yaml.load(yamlContent) as Record<string,any>;
 
       // 从 YAML 元数据中提取标题和标签
       if (yamlMetadata.title) {
