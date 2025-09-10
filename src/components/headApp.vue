@@ -6,10 +6,13 @@
     <div class="nav_font" v-for="icon in icons" :key="icon.name">
       <div>
         <i :class="icon.icon"></i>
-        <a :href="icon.url" target="_blank">{{ icon.name }}</a>
+        <!-- <a :href="icon.url">{{ icon.name }}</a> -->
+        <div @click="openLinks(icon.url)" style="display: inline;">{{ icon.name }}</div>
       </div>
     </div>
       <!-- <input type="file" class="file-input" @change="handleFileUploaded" accept=".md" /> -->
+    <HandleLogin></HandleLogin>
+
     <div class="nav_menu">
       <div class="navSelections">
         <i
@@ -26,7 +29,7 @@ import { ref } from 'vue';
 import EventBus from './eventBus';
 import { type Icon} from '@/types'
 import { useRouter } from 'vue-router'
-import useDocuments from '@/hooks/useDocuments.ts'
+import HandleLogin from '@/views/handleLogin.vue'
 // const { handleFileUploaded } = useDocuments()
 const router = useRouter()
 
@@ -48,6 +51,9 @@ const icons: Icon[] = [
     url: 'mailto:2818777520@qq.com',
   },
 ];
+function openLinks(Links: string) {
+  window.open(Links);
+}
 
 function toggleClass() {
   isVisibleClass.value = !isVisibleClass.value;
@@ -56,6 +62,7 @@ function toggleClass() {
 function goToAboutMe() {
   router.push('/me')
 }
+
 </script>
 
 <style scoped>
@@ -70,6 +77,9 @@ function goToAboutMe() {
   border-radius: 5px;
   cursor: pointer;
 } */
+.login{
+  cursor: pointer;
+}
 .nav_container {
   display: flex;
   justify-content: space-around;
@@ -100,13 +110,12 @@ function goToAboutMe() {
   text-decoration: none;
 }
 .nav_menu {
-  display: inline-block;
-  width: 50px;
+  display: none;
 }
 .nav_font div {
   margin: 0px 5px 0px 5px;
   font-size: 16px;
-  transition-property: font-size transform;
+  /* transition-property: font-size transform; */
   transition-duration: 1s;
 }
 .nav_font div:hover {
@@ -149,6 +158,10 @@ i {
   .fa-solid.fa-bars-staggered {
     display: inline;
     font-size: 50px;
+  }
+  .nav_menu {
+  display: inline-block;
+  width: 50px;
   }
 }
 </style>

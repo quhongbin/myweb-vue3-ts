@@ -4,58 +4,22 @@
 // File: bodyApp.vue
 ///////////////////////////////////////
 <script lang="ts" setup>
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref} from "vue";
 import { type TempText } from '@/types'
 import popupApp from "./popupApp.vue";
-import headApp from "./headApp.vue";
 import EventBus from "./eventBus";
 import useDocuments from "@/hooks/useDocuments.ts";
+import useTags from "@/hooks/useTags";
+import bodyAppLeft from "./bodyAppLeft.vue";
 
 const { documents,handleFileUploaded,getFromServer,openDocument,delDocument } = useDocuments();
+const {allTags,selectedTag,selectTag,clearFilter,currentPage,currentPageData,totalPages,filteredDocuments,nextPage,prevPage,goToPage} = useTags();
 // 响应式状态
 const isVisibleClass = ref<boolean>(false);
 const tempText = ref<TempText>({
   name: "瞿红斌",
   age: 18,
   jianjie: "这是一个简介",
-});
-
-// 分页相关状态
-const currentPage = ref(1);
-const itemsPerPage = ref(3);
-const selectedTag = ref<string | null>(null);
-
-// 计算所有标签
-const allTags = computed(() => {
-  if (!documents.value) return [];
-  const tagsSet = new Set<string>();
-  documents.value.forEach(doc => {
-    if (doc.tags && Array.isArray(doc.tags)) {
-      doc.tags.forEach(tag => tagsSet.add(tag));
-    }
-  });
-  return Array.from(tagsSet);
-});
-
-// 过滤后的文档数据
-const filteredDocuments = computed(() => {
-  if (!documents.value) return [];
-  if (!selectedTag.value) return documents.value;
-  return documents.value.filter(doc =>
-    doc.tags && Array.isArray(doc.tags) && doc.tags.includes(selectedTag.value!)
-  );
-});
-
-// 计算总页数
-const totalPages = computed(() => {
-  return Math.ceil(filteredDocuments.value.length / itemsPerPage.value);
-});
-
-// 获取当前页的数据
-const currentPageData = computed(() => {
-  const startIndex = (currentPage.value - 1) * itemsPerPage.value;
-  const endIndex = startIndex + itemsPerPage.value;
-  return filteredDocuments.value.slice(startIndex, endIndex);
 });
 
 console.log(documents.value?.length);
@@ -69,77 +33,19 @@ function toggleClass(): void {
   isVisibleClass.value = !isVisibleClass.value;
 }
 
-// 分页功能
-function nextPage():void {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++;
-  }
-}
 
-function prevPage():void {
-  if (currentPage.value > 1) {
-    currentPage.value--;
-  }
-}
-
-function goToPage(page: number):void {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
-  }
-}
-
-// 标签选择功能
-function selectTag(tag: string):void {
-  selectedTag.value = tag;
-  currentPage.value = 1; // 重置到第一页
-}
-
-// 清除标签筛选
-function clearFilter():void {
-  selectedTag.value = null;
-  currentPage.value = 1;
-}
 </script>
 
 <template>
   <div class="bg-main">
-    <div class="bg-left">
-      <div class="bg-left-content">
-        <div>
-          <img src="/images/qqheadImage.jpg" width="50px" height="50px" />
-        </div>
-        <div>
-          <span>姓名:</span>
-          <span>{{ tempText.name }}</span>
-        </div>
-        <div>
-          <span>简介：</span>
-          <span>{{ tempText.jianjie }}</span>
-        </div>
-
-      </div>
-      <!-- 标签页区域 -->
-      <div class="tags-section">
-          <h3>标签分类</h3>
-          <div class="tags-container">
-            <button
-              v-for="tag in allTags"
-              :key="tag"
-              @click="selectTag(tag)"
-              :class="['tag-button', { active: selectedTag === tag }]"
-            >
-              {{ tag }}
-            </button>
-          </div>
-          <button
-            v-if="selectedTag"
-            @click="clearFilter"
-            class="clear-filter-btn"
-          >
-            清除筛选
-          </button>
-        </div>
-    </div>
+    <!-- 左侧组件 -->
+    <bodyAppLeft
+      :temp-text="tempText"
+      :all-tags="allTags"
+      :selected-tag="selectedTag"
+      @select-tag="selectTag"
+      @clear-filter="clearFilter"
+    />
 
     <div class="bg-center">
       <div class="bg-center-content">
@@ -168,14 +74,12 @@ function clearFilter():void {
           <button class="delDocument" @click="delDocument(item.id)">删除</button>
         </div>
 
-
-
       </div>
         <input type="file" @change="handleFileUploaded" accept=".md" />
         <!-- 分页控件 -->
       <div class ="pagination" v-if="totalPages ">
           <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
-          <span class="page-info">第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
+          <span class="page-info">第 {{ currentPage }} 页 / 共 {{ totalPages }} 页极</span>
           <button @click="nextPage" :disabled="currentPage === totalPages">下一页</button>
       </div>
 
@@ -188,7 +92,6 @@ function clearFilter():void {
     </div>
 
     <div :class="[isVisibleClass ? 'floatMenu' : 'floatMenuDisvisible']">
-      <headApp style="display: none" />
       <popupApp :class="[isVisibleClass ? 'popupMenu' : 'popupMenuDisvisible']"></popupApp>
     </div>
   </div>
@@ -221,91 +124,6 @@ function clearFilter():void {
   width: 100%;
   height: 100%;
   background-image: ("../assets/images/heart-shape-rock-3840x2160-19910.jpg");
-}
-
-.bg-left {
-  display: inline-block;
-  width: 20%;
-  margin: 30px 0px 0 20px;
-}
-
-.bg-left-content {
-  background-color: rgb(230, 230, 230);
-  display: inline-flex;
-  border: 2px solid rgb(115, 115, 115);
-  border-radius: 20px;
-  justify-content: space-around;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-
-.bg-left-content > div {
-  margin: 10px 0px 10px 0px;
-}
-
-.bg-left-content img {
-  border-radius: 20%;
-}
-
-.bg-left-content > div:nth-child(3) {
-  height: 200px;
-  width: 90%;
-  word-wrap: break-word;
-}
-
-/* 标签页样式 */
-.tags-section {
-  width: 90%;
-  text-align: center;
-}
-
-.tags-section h3 {
-  margin-bottom: 10px;
-  color: #333;
-}
-
-.tags-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.tag-button {
-  padding: 6px 12px;
-  border: 1px solid #ccc;
-  background-color: #f5f5f5;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 12px;
-  transition: all 0.3s;
-}
-
-.tag-button:hover {
-  background-color: #e0e0e0;
-  transform: translateY(-2px);
-}
-
-.tag-button.active {
-  background-color: #409eff;
-  color: white;
-  border-color: #409eff;
-}
-
-.clear-filter-btn {
-  padding: 6px 12px;
-  border: 1px solid #ccc;
-  background-color: #ff4d4f;
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.clear-filter-btn:hover {
-  background-color: #d9363e;
 }
 
 /* 筛选信息样式 */
@@ -351,22 +169,6 @@ function clearFilter():void {
   border-radius: 10px;
   font-size: 10px;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 .bg-center {
   display: inline-block;
@@ -437,19 +239,11 @@ function clearFilter():void {
 }
 
 @media screen and (max-width: 481px) {
-  .bg-left {
-    display: none;
-  }
-
   .bg-center {
     display: inline-block;
     width: 100%;
     height: 200px;
     margin: 10px 0px 0 0px;
-  }
-
-  .bg-right {
-    display: none;
   }
 
   .bg-center-content > div {
@@ -484,7 +278,7 @@ function clearFilter():void {
   .popupMenuDisvisible {
     position: fixed;
     display: inline-block;
-    margin: 0px 0px 0px 50%;
+    margin: 0极px 0px 0px 50%;
     width: 80%;
     height: 100%;
     animation: LeftToRight 1s;

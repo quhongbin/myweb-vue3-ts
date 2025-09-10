@@ -153,6 +153,5 @@ return {
   getFromServer,
   openDocument,
   delDocument,
-
-}
+ }
 }

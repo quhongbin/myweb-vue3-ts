@@ -1,18 +1,25 @@
 <template>
-      <div id="app">
-        <headApp />
-        <router-view />
-        <bodyApp v-if="$route.path !== '/me'" />
-        <footerApp v-if="$route.path !== '/me'" />
-      </div>
+  <div id="app">
+    <headApp />
+    <router-view />
+    <bodyApp v-if="!isSpecialRoute" />
+    <footerApp v-if="!isSpecialRoute" />
+  </div>
 </template>
+
 <script lang="ts" setup>
 import headApp from './components/headApp.vue';
 import bodyApp from './components/bodyApp.vue';
 import footerApp from './components/footerApp.vue';
 import { useRoute } from 'vue-router';
+import { computed } from 'vue';
 
 const $route = useRoute();
+
+// 计算属性，判断当前是否为特殊路由
+const isSpecialRoute = computed(() => {
+  return $route.path === '/me' || $route.path === '/login';
+});
 </script>
 
 <style>
