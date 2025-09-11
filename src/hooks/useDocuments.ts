@@ -1,16 +1,9 @@
 import { ref } from "vue";
 import axios from "axios";
 import * as yaml from 'js-yaml';
+import { type Document } from "@/types";
 
 export default function(){
-  interface Document {
-    id: number;
-    title: string;
-    file_path: string;
-    html_path: string;
-    tags: string[];
-    file_size: number;
-  }
   const documents = ref<Document[]>([]);
 
 async function handleFileUploaded(e: Event) {

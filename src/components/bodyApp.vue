@@ -5,24 +5,23 @@
 ///////////////////////////////////////
 <script lang="ts" setup>
 import { onMounted, ref} from "vue";
-import { type TempText } from '@/types'
 import popupApp from "./popupApp.vue";
 import EventBus from "./eventBus";
 import useDocuments from "@/hooks/useDocuments.ts";
 import useTags from "@/hooks/useTags";
 import bodyAppLeft from "./bodyAppLeft.vue";
+import BodyAppRight from "./BodyAppRight.vue";
+import { useBodyAppStore } from "@/store/bodyApp";
 
 const { documents,handleFileUploaded,getFromServer,openDocument,delDocument } = useDocuments();
 const {allTags,selectedTag,selectTag,clearFilter,currentPage,currentPageData,totalPages,filteredDocuments,nextPage,prevPage,goToPage} = useTags();
+
+const bodyAppStore = useBodyAppStore()
+const tempText = bodyAppStore.tempText
+
 // 响应式状态
 const isVisibleClass = ref<boolean>(false);
-const tempText = ref<TempText>({
-  name: "瞿红斌",
-  age: 18,
-  jianjie: "这是一个简介",
-});
-
-console.log(documents.value?.length);
+// console.log(tempText);
 
 onMounted(() => {
   EventBus.on("switch-class", toggleClass);
@@ -40,9 +39,9 @@ function toggleClass(): void {
   <div class="bg-main">
     <!-- 左侧组件 -->
     <bodyAppLeft
-      :temp-text="tempText"
-      :all-tags="allTags"
-      :selected-tag="selectedTag"
+      :temp-Text="tempText"
+      :all-Tags="allTags"
+      :selected-Tag="selectedTag"
       @select-tag="selectTag"
       @clear-filter="clearFilter"
     />
@@ -84,12 +83,7 @@ function toggleClass(): void {
       </div>
 
       </div>
-
-    <div class="bg-right">
-      <div class="bg-right-content">
-        <div>test</div>
-      </div>
-    </div>
+    <BodyAppRight></BodyAppRight>
 
     <div :class="[isVisibleClass ? 'floatMenu' : 'floatMenuDisvisible']">
       <popupApp :class="[isVisibleClass ? 'popupMenu' : 'popupMenuDisvisible']"></popupApp>
@@ -224,11 +218,6 @@ function toggleClass(): void {
   color: #666;
 }
 
-.bg-right {
-  display: inline-block;
-  width: 15%;
-  margin: 30px 20px 0 0px;
-}
 
 .floatMenuDisvisible {
   display: none;

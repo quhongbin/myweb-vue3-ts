@@ -18,3 +18,11 @@ export interface Audio {
   url: string;
   cover: string;
 }
+export interface Document {
+  id: number;
+  title: string;
+  file_path: string;
+  html_path: string;
+  tags: string[];
+  file_size: number;
+}

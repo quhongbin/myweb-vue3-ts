@@ -1,17 +1,20 @@
 import axios, { AxiosError } from "axios"
 
-
 export default function(){
     //传输用户名和密码
-    async function login(loginName:string,loginPass:string) {
+    async function login(loginName:string,loginPassword:string) {
         try {
-            const response = await axios.post("https://localhost:3000/login",
-                {loginName,loginPass},
-            );
-            console.log(response.data)
-            fetchUserInfo()
+            const response = await axios.post('http://localhost:4000/login',{
+              loginName,
+              loginPassword
+            })
+            // if(response.data.success === true){
+              console.log(`login successful!`)
+              console.log(response.data)
+              // fetchUserInfo()
+            // }
         } catch (error) {
-            console.error(`error:${error}`)
+            console.error(`error from login():${error}`)
         }
     }
     async function fetchUserInfo() {
@@ -34,5 +37,7 @@ export default function(){
             }
         }
     }
-    return{login}
+    return{login,
+      fetchUserInfo
+    }
 }

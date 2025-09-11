@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-
+import useLogin from '@/hooks/useLogin'
 // 使用响应式状态
 const showModal = ref(false)
 const username = ref('')
 const password = ref('')
-
+const { login } = useLogin()
 // 显示登录弹窗
 const showLoginModal = () => {
   showModal.value = true
@@ -19,13 +19,8 @@ const closeLoginModal = () => {
 // 处理登录表单提交
 const handleLogin = (event: Event) => {
   event.preventDefault()
-
-  // 这里只是简单示例，实际应发送请求到后端验证
-  if (username.value === 'admin' && password.value === '123456') {
-    alert('登录成功！')
-    showModal.value = false
-  } else {
-    alert('用户名或密码错误！')
+  if (username.value !== '' && password.value !== '') {
+        login(username.value,password.value)
   }
 }
 </script>

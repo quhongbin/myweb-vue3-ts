@@ -4,7 +4,7 @@
 // File: bodyAppLeft.vue
 ///////////////////////////////////////
 <script lang="ts" setup>
-import { defineProps, defineEmits } from 'vue'
+import {  defineEmits } from 'vue'
 import { type TempText } from '@/types'
 
 // 定义Props
@@ -111,7 +111,7 @@ function clearFilter(): void {
 
 .tags-section h3 {
   margin-bottom: 10px;
-  color: #333;
+  color: #f5f5f5;
 }
 
 .tags-container {
