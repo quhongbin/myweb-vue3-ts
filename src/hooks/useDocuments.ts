@@ -29,7 +29,7 @@ async function handleFileUploaded(e: Event) {
   }
 
   await axios
-    .post("http://localhost:3000/api/documents", formData, {
+    .post("http://localhost:30000/api/documents", formData, {
       headers: {},
     })
     .then((response) => {
@@ -102,7 +102,7 @@ function readFileAsText(file: File): Promise<string> {
 /////////////////YAML 解析////////////////////
 function getFromServer(): void {
   axios
-    .get("http://localhost:3000/api/documents", {
+    .get("http://localhost:30000/api/documents", {
       headers: {
         "Content-Type": "application/json",
       },
@@ -124,7 +124,7 @@ function openDocument(path: string): void {
 function delDocument(id: number): void {
   const comfiromDel: boolean = window.confirm("确认删除?");
   if (comfiromDel) {
-    axios.delete(`http://localhost:3000/api/documents/${id}`, {
+    axios.delete(`http://localhost:30000/api/documents/${id}`, {
         headers: {
           "Content-Type": "application/json",
         },

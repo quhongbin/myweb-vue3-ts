@@ -5,7 +5,7 @@ export const useBodyAppStore = defineStore('bodyApp',{
     state(){
       return {
         tempText: ref<TempText>({
-          name: "瞿红斌",
+          name: "xiaoqu",
           age: 18,
           jianjie: "这是一个简介",
         })

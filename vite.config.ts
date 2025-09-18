@@ -18,8 +18,8 @@ export default defineConfig({
     assetsDir: 'assets',
   },
   server:{
-    host: '127.0.0.1',
-    port: 5802
+    host: 'localhost',
+    port: 5802,
   }
 
 })

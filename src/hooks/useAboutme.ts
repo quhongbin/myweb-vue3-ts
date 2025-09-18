@@ -1,8 +1,8 @@
 import axios from "axios";
 export default function(){
     async function getInfoForMe() {
-        
-        axios.get("http://localhost:3000/api/info",{
+
+        axios.get("http://localhost:30000/api/info",{
             headers:{
                 Authorization:"quhongbin",
                 Accept:"application/json"
@@ -19,7 +19,7 @@ export default function(){
     }
 
     async function postInfoForMe(id:number,name:string) {
-        axios.post("http://localhost:3000/api/info",{
+        axios.post("http://localhost:30000/api/info",{
             userID:id,
             userName:name
         })
@@ -32,6 +32,6 @@ export default function(){
             console.error(`error from postInfoForMe:${error}`);
         })
     }
-    
+
     return{getInfoForMe,postInfoForMe}
 }
