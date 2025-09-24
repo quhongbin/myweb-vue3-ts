@@ -9,8 +9,7 @@ export default function(){
               loginPassword
             })
             // if(response.data.success === true){
-              console.log(`login successful!`)
-              // console.log(response.data)
+              console.log(response.data)
               fetchUserInfo()
             // }
         } catch (error) {
@@ -20,13 +19,8 @@ export default function(){
     async function fetchUserInfo() {
         try {
             // 无需手动添加 Token，Cookie 会自动发送
-            const response = await axios.get('/api/user/info');
-            // for (const [key,value] of response.data) {
-            //     console.log(`key:${key},value${value}`) //
-            // }
-            // Object.keys(response.data).forEach(function (val:string,index:number,array:string[]) {
-            //     console.log(`${val}:${response.data[val]}`)
-            // })
+            const response = await axios.get('http://localhost:40000/api/user/info');
+            console.log(response.data)
         } catch (error) {
             const axiosError = error as AxiosError
             // Token 无效/过期时，后端返回 401
@@ -37,7 +31,8 @@ export default function(){
             }
         }
     }
-    return{login,
+    return{
+      login,
       fetchUserInfo
     }
 }
