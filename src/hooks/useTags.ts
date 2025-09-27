@@ -1,7 +1,9 @@
 import {ref,computed} from "vue"
 import useDocuments from "./useDocuments";
 export default function(){
-const {documents} = useDocuments()
+const {documents,getFromServer} = useDocuments()
+//获取博客数据
+getFromServer()
   // 分页相关状态
 const currentPage = ref(1);
 const itemsPerPage = ref(3);

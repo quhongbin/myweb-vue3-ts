@@ -1,10 +1,10 @@
-import { ref } from "vue";
+import { ref, type Ref } from "vue";
 import axios from "axios";
 import * as yaml from 'js-yaml';
 import { type Document } from "@/types";
 
 export default function(){
-  const documents = ref<Document[]>([]);
+const documents:Ref<Document[]> = ref([]);
 
 async function handleFileUploaded(e: Event) {
   const target = e.target as HTMLInputElement;
@@ -108,14 +108,11 @@ function getFromServer(): void {
       },
     })
     .then((response) => {
-      console.log("Documents has received");
-      // 处理后端传递的数据,将数据转换为存入documentsu数组中,类型为Document
-      for (let i = 0; i < response.data.length; i++) {
-        documents.value.push(response.data[i]);
-      }
+      // 直接赋值，避免重复
+      documents.value = response.data;
       console.log(documents.value);
     })
-    .catch((error) => console.log("From bodyApp.vue getToServer function Error:" + error));
+    .catch((error) => console.log("From bodyApp.vue getFromServer function Error:" + error));
 }
 
 function openDocument(path: string): void {

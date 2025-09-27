@@ -4,7 +4,7 @@
 // File: bodyApp.vue
 ///////////////////////////////////////
 <script lang="ts" setup>
-import { onMounted, ref} from "vue";
+import { onBeforeMount, onMounted, ref,watch} from "vue";
 import popupApp from "./popupApp.vue";
 import EventBus from "./eventBus";
 import useDocuments from "@/hooks/useDocuments.ts";
@@ -13,7 +13,7 @@ import bodyAppLeft from "./bodyAppLeft.vue";
 import BodyAppRight from "./BodyAppRight.vue";
 import { useBodyAppStore } from "@/store/bodyApp";
 
-const { documents,handleFileUploaded,getFromServer,openDocument,delDocument } = useDocuments();
+const { handleFileUploaded,getFromServer,openDocument,delDocument } = useDocuments();
 const {allTags,selectedTag,selectTag,clearFilter,currentPage,currentPageData,totalPages,filteredDocuments,nextPage,prevPage,goToPage} = useTags();
 
 const bodyAppStore = useBodyAppStore()
@@ -23,9 +23,11 @@ const tempText = bodyAppStore.tempText
 const isVisibleClass = ref<boolean>(false);
 // console.log(tempText);
 
+onBeforeMount(()=>{
+  getFromServer();
+})
 onMounted(() => {
   EventBus.on("switch-class", toggleClass);
-  getFromServer();
 });
 
 function toggleClass(): void {
@@ -39,9 +41,9 @@ function toggleClass(): void {
   <div class="bg-main">
     <!-- 左侧组件 -->
     <bodyAppLeft
-      :temp-Text="tempText"
-      :all-Tags="allTags"
-      :selected-Tag="selectedTag"
+      :tempText="tempText"
+      :allTags="allTags"
+      :selectedTag="selectedTag"
       @select-tag="selectTag"
       @clear-filter="clearFilter"
     />
