@@ -62,6 +62,11 @@ function toggleClass(): void {
           @click="openDocument(item.html_path)"
           class="document-item"
         >
+          <div class="document-item-proportion-content">
+            <span>{{ item.proportional_content }}</span>
+
+          </div>
+
           <div :href="item.html_path">{{ item.title }}</div>
           <div class="document-tags">
             <span

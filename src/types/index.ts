@@ -25,4 +25,5 @@ export interface Document {
   html_path: string;
   tags: string[];
   file_size: number;
+  proportional_content:string
 }
